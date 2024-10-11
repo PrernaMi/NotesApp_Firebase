@@ -24,15 +24,17 @@ class AddUpDatePage extends StatefulWidget {
 
 class _AddUpDatePageState extends State<AddUpDatePage> {
   var collections = FirebaseFirestore.instance.collection('notes');
+
   @override
   void initState() {
-    if(widget.isDelete){
+    if (widget.isDelete) {
       //delete here
       collections.doc(widget.id).delete();
       Navigator.pop(context);
     }
     super.initState();
   }
+
   TextEditingController titleController = TextEditingController();
 
   TextEditingController descController = TextEditingController();
@@ -40,6 +42,7 @@ class _AddUpDatePageState extends State<AddUpDatePage> {
   var firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
   String? uid;
+
   @override
   Widget build(BuildContext context) {
     var collections = firestore.collection('notes');
@@ -54,11 +57,17 @@ class _AddUpDatePageState extends State<AddUpDatePage> {
       body: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Add Note",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
+            widget.isUpdate == false
+                ? Text(
+                    "Add Note",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  )
+                : Text(
+                    "Update Note",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
             TextField(
               controller: titleController,
               decoration: InputDecoration(
@@ -88,13 +97,20 @@ class _AddUpDatePageState extends State<AddUpDatePage> {
               children: [
                 ElevatedButton(
                     onPressed: () async {
+                      String title = titleController.text.toString();
+                      String desc = descController.text.toString();
                       widget.isUpdate == false
                           /*---------Adding Note in Firestore------*/
-                          ? collections.add(NoteModel(
-                                  title: titleController.text.toString(),
-                                  desc: descController.text.toString(),
-                                  uid: uid)
-                              .toMap())
+                          ? title != "" && desc != ""
+                              ? collections.add(NoteModel(
+                                      title: titleController.text.toString(),
+                                      desc: descController.text.toString(),
+                                      uid: uid)
+                                  .toMap())
+                              : ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "Please enter required fields!!")))
                           /*---------Updating Note in Firestore------*/
                           : collections.doc(widget.id!).update(NoteModel(
                                   title: titleController.text.toString(),

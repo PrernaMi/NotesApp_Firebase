@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (uid != null && uid != "") {
       nextPage = HomePage();
     }
-    Timer(Duration(milliseconds: 400), () {
+    Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return nextPage;
       }));
@@ -37,7 +37,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Image.asset("assets/images/notes_splash_logo.png")),
+      body: Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 50.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              "assets/images/notes_splash_logo.png",
+              height: 100,
+              width: 100,
+              color: Colors.grey,
+            ),
+            Text(
+              "Capture your thoughts, shape your ideas",
+              style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

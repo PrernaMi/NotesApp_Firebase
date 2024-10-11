@@ -16,7 +16,6 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.redAccent.shade100.withOpacity(0.3),
       body: Padding(
         padding: EdgeInsets.all(10.0),
         child: SingleChildScrollView(
@@ -131,13 +130,14 @@ class SignUpPage extends StatelessWidget {
                         var collection = fireStore.collection("user");
                         collection.doc(cred.user!.uid).set(UserModel(
                                 name: nameCon.text.toString(),
+                                picUrl: "",
                                 email: emailCon.text.toString(),
                                 phone: phoneCon.text.toString(),
                                 gender: genderCon.text.toString())
                             .toDoc());
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
-                          return HomePage();
+                          return LoginPage();
                         }));
                       }
                     } on FirebaseAuthException catch (e) {
