@@ -45,7 +45,6 @@ class _AddUpDatePageState extends State<AddUpDatePage> {
 
   @override
   Widget build(BuildContext context) {
-    var collections = firestore.collection('notes');
     if (user != null) {
       uid = user!.uid;
     }

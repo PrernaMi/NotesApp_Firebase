@@ -35,6 +35,8 @@ class _HomePageState extends State<HomePage> {
         firestore.collection("notes").where('uid', isEqualTo: uid);
     var userInfoCollection =
         firestore.collection('user').where('email', isEqualTo: currUser!.email);
+    var profilePicInfo = firestore.collection('user').doc(currUser!.uid).collection('picsCollection').where('email',isEqualTo: currUser!.email);
+    var profileCollection = FirebaseFirestore.instance.collection('user').doc(currUser!.uid).collection('picsCollection');
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Notes...")),
@@ -121,95 +123,61 @@ class _HomePageState extends State<HomePage> {
                                                   children: [
                                                     InkWell(
                                                       onTap: () async {
-                                                        // try {
-                                                        //   //pick image here from gallery we can also use camera
-                                                        //   final XFile? image =
-                                                        //       await ImagePicker().pickImage(source: ImageSource.camera);
-                                                        //   if (image != null) {
-                                                        //     CroppedFile?croppedImage =
-                                                        //     await ImageCropper().cropImage(sourcePath: image.path,
-                                                        //             uiSettings: [
-                                                        //           AndroidUiSettings
-                                                        //             (toolbarTitle:
-                                                        //                 'Cropper',
-                                                        //             toolbarColor:
-                                                        //                 Colors
-                                                        //                     .deepOrange,
-                                                        //             toolbarWidgetColor:
-                                                        //                 Colors
-                                                        //                     .white,
-                                                        //             aspectRatioPresets: [
-                                                        //               CropAspectRatioPreset
-                                                        //                   .original,
-                                                        //               CropAspectRatioPreset
-                                                        //                   .square,
-                                                        //             ],
-                                                        //           ),
-                                                        //         ]);
-                                                        //     if (croppedImage != null) {
-                                                        //       //this picked file will be shown in asset image
-                                                        //       pickedFile = File(croppedImage.path);
-                                                        //       //Save image in firestore here
-                                                        //       var storage = FirebaseStorage.instance;
-                                                        //       var storageRef = storage.ref();
-                                                        //       var profilePicRef = storageRef.child('images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg');
-                                                        //       await profilePicRef.putFile(pickedFile!);
-                                                        //       var actualUrl = profilePicRef.getDownloadURL();
-                                                        //       setState(() {});
-                                                        //       Navigator.pop(context);
-                                                        //     }
-                                                        //   }
-                                                        // } catch (e) {
-                                                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-                                                        // }
-                                                        try {
-                                                          // Pick image here from gallery or camera
-                                                          final XFile? image = await ImagePicker().pickImage(source: ImageSource.camera);
-
-                                                          if (image != null) {
-                                                            CroppedFile? croppedImage = await ImageCropper().cropImage(
-                                                              sourcePath: image.path,
-                                                              uiSettings: [
+                                                        //pick image here from gallery we can also use camera
+                                                        final XFile? image =
+                                                            await ImagePicker()
+                                                                .pickImage(
+                                                                    source: ImageSource
+                                                                        .camera);
+                                                        if (image != null) {
+                                                          CroppedFile?
+                                                              croppedImage =
+                                                              await ImageCropper()
+                                                                  .cropImage(
+                                                                      sourcePath:
+                                                                          image
+                                                                              .path,
+                                                                      uiSettings: [
                                                                 AndroidUiSettings(
-                                                                  toolbarTitle: 'Cropper',
-                                                                  toolbarColor: Colors.deepOrange,
-                                                                  toolbarWidgetColor: Colors.white,
+                                                                  toolbarTitle:
+                                                                      'Cropper',
+                                                                  toolbarColor:
+                                                                      Colors
+                                                                          .deepOrange,
+                                                                  toolbarWidgetColor:
+                                                                      Colors
+                                                                          .white,
                                                                   aspectRatioPresets: [
-                                                                    CropAspectRatioPreset.original,
-                                                                    CropAspectRatioPreset.square,
+                                                                    CropAspectRatioPreset
+                                                                        .original,
+                                                                    CropAspectRatioPreset
+                                                                        .square,
                                                                   ],
                                                                 ),
-                                                              ],
-                                                            );
-
-                                                            if (croppedImage != null) {
-                                                              // File creation for cropped image
-                                                              File pickedFile = File(croppedImage.path);
-
-                                                              // Save image in Firebase Storage
-                                                              var storage = FirebaseStorage.instance;
-                                                              var storageRef = storage.ref();
-                                                              var profilePicRef = storageRef.child(
-                                                                'images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg',
-                                                              );
-
-                                                              // Upload the file and get download URL
-                                                              await profilePicRef.putFile(pickedFile);
-                                                              String actualUrl = await profilePicRef.getDownloadURL();
-                                                              print(actualUrl);
-                                                              // Set the state and pop the context
-                                                              setState(() {
-                                                                // Save or use the actualUrl as needed
-
-                                                              });
-                                                              Navigator.pop(context);
-                                                            }
+                                                              ]);
+                                                          if (croppedImage != null) {
+                                                            //this picked file will be shown in asset image
+                                                            pickedFile = File(croppedImage.path);
+                                                            //Save image in firestore here
+                                                            var storage = FirebaseStorage.instance;
+                                                            var storageRef = storage.ref();
+                                                            var profilePicRef =storageRef.child(
+                                                                    'images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg');
+                                                            await profilePicRef.putFile(pickedFile!);
+                                                            var actualUrl = profilePicRef.getDownloadURL();
+                                                            //adding current pic url in user data
+                                                            FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
+                                                              'picurl' : actualUrl
+                                                            });
+                                                            //creating a new collection in user doc to store all profile pics
+                                                            //giving same id which is given in user doc
+                                                            profileCollection.doc(currUser!.uid).update({
+                                                              'picurl${DateTime.now().millisecondsSinceEpoch}' : actualUrl
+                                                            });
+                                                            setState(() {});
+                                                            Navigator.pop(context);
                                                           }
-                                                        } catch (e) {
-                                                          // Displaying detailed error message to the user
-                                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
                                                         }
-
                                                       },
                                                       /*----camera---*/
                                                       child: Column(
@@ -268,19 +236,30 @@ class _HomePageState extends State<HomePage> {
                                                                     ],
                                                                   ),
                                                                 ]);
-                                                            if (croppedImage != null) {
-                                                              pickedFile = File(croppedImage.path);
+                                                            if (croppedImage !=
+                                                                null) {
+                                                              pickedFile = File(
+                                                                  croppedImage
+                                                                      .path);
 
                                                               //Save image in firestore here
                                                               var storage = FirebaseStorage.instance;
                                                               var storageRef = storage.ref();
-                                                              var profilePicRef = storageRef.child("images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpg");
+                                                              var profilePicRef = storageRef.child(
+                                                                      "images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpg");
                                                               await profilePicRef.putFile(pickedFile!);
-                                                              // var actualUrl = await profilePicRef.getDownloadURL();
-                                                              // print(actualUrl);
-                                                              // FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
-                                                              //   'picurl' : actualUrl
-                                                              // });
+                                                              var actualUrl = await profilePicRef.getDownloadURL();
+                                                              //adding current pic url in user data
+                                                              FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
+                                                                'picurl' : actualUrl
+                                                              });
+                                                              //creating a new collection in user doc to store all profile pics
+                                                              //giving same id which is given in user doc
+                                                              var profileCollection =
+                                                              FirebaseFirestore.instance.collection('user').doc(currUser!.uid).collection('picsCollection');
+                                                              //adding all profile pic to document
+                                                              profileCollection.doc(currUser!.uid).set({'picurl${DateTime.now().millisecondsSinceEpoch}'
+                                                                  : actualUrl},SetOptions(merge: true));
                                                               setState(() {});
                                                               Navigator.pop(context);
                                                             }
@@ -324,9 +303,15 @@ class _HomePageState extends State<HomePage> {
                                       SizedBox(
                                         height: 50,
                                         width: 50,
-                                        child: CircleAvatar(
-                                          backgroundImage: pickedFile != null ? FileImage(pickedFile!) : null
-                                        ),
+                                        child: snapshot.data!.docs[0]['picurl'] != null ?
+                                        SizedBox(
+                                          height: 50,
+                                          width: 50,
+                                          child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(25),
+                                              child: Image.network(snapshot.data!.docs[0]['picurl'],fit: BoxFit.cover,)),
+                                        ) :
+                                        CircleAvatar()
                                       ),
                                       Positioned(
                                           bottom: 0,
@@ -488,16 +473,20 @@ class _HomePageState extends State<HomePage> {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (_, index) {
                           return InkWell(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context){
-                                return ExploreNote(data: snapshot.data!.docs[index].data());
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return ExploreNote(
+                                    data: snapshot.data!.docs[index].data());
                               }));
                             },
                             child: Container(
                               padding: EdgeInsets.all(8),
                               margin: EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                  color: Colors.primaries[Random().nextInt(Colors.primaries.length-1)].withOpacity(0.3),
+                                  color: Colors.primaries[Random()
+                                          .nextInt(Colors.primaries.length - 1)]
+                                      .withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(10),
                                   border:
                                       Border.all(color: Colors.grey, width: 1)),
@@ -507,7 +496,8 @@ class _HomePageState extends State<HomePage> {
                                 subtitle: Text(
                                     snapshot.data!.docs[index].data()['desc']),
                                 trailing: SizedBox(
-                                  width: MediaQuery.of(context).size.width * 0.15,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.15,
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -527,7 +517,8 @@ class _HomePageState extends State<HomePage> {
                                                 prevDesc: snapshot
                                                     .data!.docs[index]
                                                     .data()['desc'],
-                                                id: snapshot.data!.docs[index].id,
+                                                id: snapshot
+                                                    .data!.docs[index].id,
                                               );
                                             }));
                                           },
@@ -544,7 +535,8 @@ class _HomePageState extends State<HomePage> {
                                               return AddUpDatePage(
                                                 isUpdate: false,
                                                 isDelete: true,
-                                                id: snapshot.data!.docs[index].id,
+                                                id: snapshot
+                                                    .data!.docs[index].id,
                                               );
                                             }));
                                           },

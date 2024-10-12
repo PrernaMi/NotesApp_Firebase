@@ -48,117 +48,119 @@ class _ChangeProfileInfoState extends State<ChangeProfileInfo> {
             child: Icon(Icons.arrow_back_ios_new_outlined)),
         title: Center(child: Text("Edit Profile")),
       ),
-      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: collections.snapshots(),
-          builder: (_, snapshot) {
-            return SingleChildScrollView(
-              child: Container(
-                height: mqData!.size.height,
-                width: mqData!.size.width,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          CircleAvatar(
-                            maxRadius: 50,
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            widget.userData['name'],
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            "Email Address",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          TextField(
-                            controller: emailCon,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "UserName",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          TextField(
-                            controller: nameCon,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "Mobile No.",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          TextField(
-                            controller: phoneCon,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            "Gender",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          TextField(
-                            controller: genderCon,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Center(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  try {
-                                    collections.doc(uid).update(UserModel(
-                                            name: nameCon.text.toString(),
-                                            email: emailCon.text.toString(),
-                                            picUrl: widget.userData['picurl'],
-                                            phone: phoneCon.text.toString(),
-                                            gender: genderCon.text.toString())
-                                        .toDoc());
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Information Updated Successfully!!!")));
-                                    Navigator.pushReplacement(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return HomePage();
-                                    }));
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(e.toString())));
-                                  }
-                                },
-                                child: Text("Change profile info")),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: mqData!.size.height,
+          width: mqData!.size.width,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    widget.userData['picurl'] != null ? SizedBox(
+                      height: 70,
+                      width: 70,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(35),
+                          child: Image.network(widget.userData['picurl'],fit: BoxFit.cover,)),
+                    ):CircleAvatar(
+                      maxRadius: 50,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      widget.userData['name'],
+                      style: TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ),
-            );
-          }),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      "Email Address",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    TextField(
+                      controller: emailCon,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "UserName",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    TextField(
+                      controller: nameCon,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Mobile No.",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    TextField(
+                      controller: phoneCon,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Gender",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    TextField(
+                      controller: genderCon,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            try {
+                              collections.doc(uid).update(UserModel(
+                                      name: nameCon.text.toString(),
+                                      email: emailCon.text.toString(),
+                                      picUrl: widget.userData['picurl'],
+                                      phone: phoneCon.text.toString(),
+                                      gender: genderCon.text.toString())
+                                  .toDoc());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "Information Updated Successfully!!!")));
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return HomePage();
+                              }));
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())));
+                            }
+                          },
+                          child: Text("Change profile info")),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
