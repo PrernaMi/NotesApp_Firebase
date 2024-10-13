@@ -239,8 +239,7 @@ class _HomePageState extends State<HomePage> {
                                                                             .gallery);
                                                                     if (image != null) {
                                                                       CroppedFile?
-                                                                      croppedImage =
-                                                                      await ImageCropper().cropImage(
+                                                                      croppedImage = await ImageCropper().cropImage(
                                                                           sourcePath:
                                                                           image
                                                                               .path,
