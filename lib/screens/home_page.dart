@@ -233,8 +233,7 @@ class _HomePageState extends State<HomePage> {
                                                                   try {
                                                                     //pick image here from gallery we can also use camera
                                                                     final XFile? image =
-                                                                    await ImagePicker()
-                                                                        .pickImage(
+                                                                    await ImagePicker().pickImage(
                                                                         source: ImageSource
                                                                             .gallery);
                                                                     if (image != null) {
