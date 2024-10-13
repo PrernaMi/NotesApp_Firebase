@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_notes/models/user_model.dart';
 import 'package:firebase_notes/screens/add_update_page.dart';
+import 'package:firebase_notes/screens/all_profile_pics.dart';
 import 'package:firebase_notes/screens/explore_note.dart';
 import 'package:firebase_notes/start_screen/change_profile_info.dart';
 import 'package:firebase_notes/start_screen/forgot_pass.dart';
@@ -34,8 +35,7 @@ class _HomePageState extends State<HomePage> {
     var collections =
         firestore.collection("notes").where('uid', isEqualTo: uid);
     var userInfoCollection =
-        firestore.collection('user').where('email', isEqualTo: currUser!.email);
-    var profilePicInfo = firestore.collection('user').doc(currUser!.uid).collection('picsCollection').where('email',isEqualTo: currUser!.email);
+        firestore.collection('user').doc(currUser!.uid);
     var profileCollection = FirebaseFirestore.instance.collection('user').doc(currUser!.uid).collection('picsCollection');
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.8,
-        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        child: StreamBuilder<DocumentSnapshot<Map<String,dynamic>>>(
             stream: userInfoCollection.snapshots(),
             builder: (_, snapshot) {
               return snapshot.data != null
@@ -63,239 +63,18 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return ChangeProfileInfo(
-                                  userData: snapshot.data!.docs[0],
+                                  userData: snapshot.data!.data(),
                                 );
                               }));
                             },
                             child: Row(
                               children: [
-                                //open bottom sheet to pick camera or gallery
+                                //see profile pics
                                 InkWell(
-                                  onTap: () async {
-                                    showModalBottomSheet(
-                                        context: (context),
-                                        constraints:
-                                            BoxConstraints(maxHeight: 200),
-                                        builder: (_) {
-                                          return Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 20, horizontal: 10),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    InkWell(
-                                                        onTap: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Icon(
-                                                          Icons
-                                                              .highlight_remove_rounded,
-                                                          size: 30,
-                                                        )),
-                                                    Text(
-                                                      "Profile photo",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 20),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () {},
-                                                      child: Icon(
-                                                        Icons.delete,
-                                                        size: 30,
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                /*-----Camera and Gallery----*/
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    InkWell(
-                                                      onTap: () async {
-                                                        //pick image here from gallery we can also use camera
-                                                        final XFile? image =
-                                                            await ImagePicker()
-                                                                .pickImage(
-                                                                    source: ImageSource
-                                                                        .camera);
-                                                        if (image != null) {
-                                                          CroppedFile?
-                                                              croppedImage =
-                                                              await ImageCropper()
-                                                                  .cropImage(
-                                                                      sourcePath:
-                                                                          image
-                                                                              .path,
-                                                                      uiSettings: [
-                                                                AndroidUiSettings(
-                                                                  toolbarTitle:
-                                                                      'Cropper',
-                                                                  toolbarColor:
-                                                                      Colors
-                                                                          .deepOrange,
-                                                                  toolbarWidgetColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  aspectRatioPresets: [
-                                                                    CropAspectRatioPreset
-                                                                        .original,
-                                                                    CropAspectRatioPreset
-                                                                        .square,
-                                                                  ],
-                                                                ),
-                                                              ]);
-                                                          if (croppedImage != null) {
-                                                            //this picked file will be shown in asset image
-                                                            pickedFile = File(croppedImage.path);
-                                                            //Save image in firestore here
-                                                            var storage = FirebaseStorage.instance;
-                                                            var storageRef = storage.ref();
-                                                            var profilePicRef =storageRef.child(
-                                                                    'images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg');
-                                                            await profilePicRef.putFile(pickedFile!);
-                                                            var actualUrl = profilePicRef.getDownloadURL();
-                                                            //adding current pic url in user data
-                                                            FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
-                                                              'picurl' : actualUrl
-                                                            });
-                                                            //creating a new collection in user doc to store all profile pics
-                                                            //giving same id which is given in user doc
-                                                            profileCollection.doc(currUser!.uid).update({
-                                                              'picurl${DateTime.now().millisecondsSinceEpoch}' : actualUrl
-                                                            });
-                                                            setState(() {});
-                                                            Navigator.pop(context);
-                                                          }
-                                                        }
-                                                      },
-                                                      /*----camera---*/
-                                                      child: Column(
-                                                        children: [
-                                                          Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              decoration: BoxDecoration(
-                                                                  border: Border.all(
-                                                                      color: Colors
-                                                                          .black),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              25)),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .camera_alt_outlined,
-                                                                size: 30,
-                                                              )),
-                                                          Text("Camera")
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                      onTap: () async {
-                                                        try {
-                                                          //pick image here from gallery we can also use camera
-                                                          final XFile? image =
-                                                              await ImagePicker()
-                                                                  .pickImage(
-                                                                      source: ImageSource
-                                                                          .gallery);
-                                                          if (image != null) {
-                                                            CroppedFile?
-                                                                croppedImage =
-                                                                await ImageCropper().cropImage(
-                                                                    sourcePath:
-                                                                        image
-                                                                            .path,
-                                                                    uiSettings: [
-                                                                  AndroidUiSettings(
-                                                                    toolbarTitle:
-                                                                        'Cropper',
-                                                                    toolbarColor:
-                                                                        Colors
-                                                                            .deepOrange,
-                                                                    toolbarWidgetColor:
-                                                                        Colors
-                                                                            .white,
-                                                                    aspectRatioPresets: [
-                                                                      CropAspectRatioPreset
-                                                                          .original,
-                                                                      CropAspectRatioPreset
-                                                                          .square,
-                                                                    ],
-                                                                  ),
-                                                                ]);
-                                                            if (croppedImage !=
-                                                                null) {
-                                                              pickedFile = File(
-                                                                  croppedImage
-                                                                      .path);
-
-                                                              //Save image in firestore here
-                                                              var storage = FirebaseStorage.instance;
-                                                              var storageRef = storage.ref();
-                                                              var profilePicRef = storageRef.child(
-                                                                      "images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpg");
-                                                              await profilePicRef.putFile(pickedFile!);
-                                                              var actualUrl = await profilePicRef.getDownloadURL();
-                                                              //adding current pic url in user data
-                                                              FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
-                                                                'picurl' : actualUrl
-                                                              });
-                                                              //creating a new collection in user doc to store all profile pics
-                                                              //giving same id which is given in user doc
-                                                              var profileCollection =
-                                                              FirebaseFirestore.instance.collection('user').doc(currUser!.uid).collection('picsCollection');
-                                                              //adding all profile pic to document
-                                                              profileCollection.doc(currUser!.uid).set({'picurl${DateTime.now().millisecondsSinceEpoch}'
-                                                                  : actualUrl},SetOptions(merge: true));
-                                                              setState(() {});
-                                                              Navigator.pop(context);
-                                                            }
-                                                          }
-                                                        } catch (e) {
-                                                          print(e.toString());
-                                                        }
-                                                      },
-                                                      /*----Gallery---*/
-                                                      child: Column(
-                                                        children: [
-                                                          Container(
-                                                              height: 50,
-                                                              width: 50,
-                                                              decoration: BoxDecoration(
-                                                                  border: Border.all(
-                                                                      color: Colors
-                                                                          .black),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              25)),
-                                                              child: Icon(
-                                                                Icons.photo,
-                                                                size: 30,
-                                                              )),
-                                                          Text("Gallery")
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        });
+                                  onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                                      return ProfilePics(profilePic: snapshot.data!.data()!['picurl'] ?? CircleAvatar());
+                                    }));
                                   },
                                   child: Stack(
                                     children: [
@@ -303,22 +82,251 @@ class _HomePageState extends State<HomePage> {
                                       SizedBox(
                                         height: 50,
                                         width: 50,
-                                        child: snapshot.data!.docs[0]['picurl'] != null ?
+                                        child: snapshot.data!.data()!['picurl'] != null ?
                                         SizedBox(
                                           height: 50,
                                           width: 50,
                                           child: ClipRRect(
                                               borderRadius: BorderRadius.circular(25),
-                                              child: Image.network(snapshot.data!.docs[0]['picurl'],fit: BoxFit.cover,)),
+                                              child: Image.network(snapshot.data!.data()!['picurl'],fit: BoxFit.cover,)),
                                         ) :
                                         CircleAvatar()
                                       ),
                                       Positioned(
                                           bottom: 0,
                                           right: 0,
-                                          child: Icon(
-                                            Icons.edit,
-                                            size: 20,
+                                          //bottom sheet to change profile picture
+                                          child: InkWell(
+                                            onTap: () async {
+                                              showModalBottomSheet(
+                                                  context: (context),
+                                                  constraints:
+                                                  BoxConstraints(maxHeight: 200),
+                                                  builder: (_) {
+                                                    return Padding(
+                                                      padding: EdgeInsets.symmetric(
+                                                          vertical: 20, horizontal: 10),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment.spaceAround,
+                                                        children: [
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                            children: [
+                                                              InkWell(
+                                                                  onTap: () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .highlight_remove_rounded,
+                                                                    size: 30,
+                                                                  )),
+                                                              Text(
+                                                                "Profile photo",
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                    FontWeight.bold,
+                                                                    fontSize: 20),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () {},
+                                                                child: Icon(
+                                                                  Icons.delete,
+                                                                  size: 30,
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          /*-----Camera and Gallery----*/
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceAround,
+                                                            children: [
+                                                              InkWell(
+                                                                onTap: () async {
+                                                                  //pick image here from gallery we can also use camera
+                                                                  final XFile? image =
+                                                                  await ImagePicker()
+                                                                      .pickImage(
+                                                                      source: ImageSource
+                                                                          .camera);
+                                                                  if (image != null) {
+                                                                    CroppedFile?
+                                                                    croppedImage =
+                                                                    await ImageCropper()
+                                                                        .cropImage(
+                                                                        sourcePath:
+                                                                        image
+                                                                            .path,
+                                                                        uiSettings: [
+                                                                          AndroidUiSettings(
+                                                                            toolbarTitle:
+                                                                            'Cropper',
+                                                                            toolbarColor:
+                                                                            Colors
+                                                                                .deepOrange,
+                                                                            toolbarWidgetColor:
+                                                                            Colors
+                                                                                .white,
+                                                                            aspectRatioPresets: [
+                                                                              CropAspectRatioPreset
+                                                                                  .original,
+                                                                              CropAspectRatioPreset
+                                                                                  .square,
+                                                                            ],
+                                                                          ),
+                                                                        ]);
+                                                                    if (croppedImage != null) {
+                                                                      //this picked file will be shown in asset image
+                                                                      pickedFile = File(croppedImage.path);
+                                                                      //Save image in firestore here
+                                                                      var storage = FirebaseStorage.instance;
+                                                                      var storageRef = storage.ref();
+                                                                      var profilePicRef = storageRef.child(
+                                                                          'images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg');
+                                                                      await profilePicRef.putFile(pickedFile!);
+                                                                      var actualUrl = profilePicRef.getDownloadURL();
+                                                                      //adding current pic url in user data
+                                                                      FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
+                                                                        'picurl' : actualUrl
+                                                                      });
+                                                                      //creating a new collection in user doc to store all profile pics
+                                                                      //giving same id which is given in user doc
+                                                                      profileCollection.doc(DateTime.now().millisecondsSinceEpoch.toString()).set({
+                                                                        'url' : actualUrl
+                                                                      });
+                                                                      Navigator.pop(context);
+                                                                      setState(() {});
+                                                                    }
+                                                                  }
+                                                                },
+                                                                /*----camera---*/
+                                                                child: Column(
+                                                                  children: [
+                                                                    Container(
+                                                                        height: 50,
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                            border: Border.all(
+                                                                                color: Colors
+                                                                                    .black),
+                                                                            borderRadius:
+                                                                            BorderRadius
+                                                                                .circular(
+                                                                                25)),
+                                                                        child: Icon(
+                                                                          Icons
+                                                                              .camera_alt_outlined,
+                                                                          size: 30,
+                                                                        )),
+                                                                    Text("Camera")
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              InkWell(
+                                                                onTap: () async {
+                                                                  try {
+                                                                    //pick image here from gallery we can also use camera
+                                                                    final XFile? image =
+                                                                    await ImagePicker()
+                                                                        .pickImage(
+                                                                        source: ImageSource
+                                                                            .gallery);
+                                                                    if (image != null) {
+                                                                      CroppedFile?
+                                                                      croppedImage =
+                                                                      await ImageCropper().cropImage(
+                                                                          sourcePath:
+                                                                          image
+                                                                              .path,
+                                                                          uiSettings: [
+                                                                            AndroidUiSettings(
+                                                                              toolbarTitle:
+                                                                              'Cropper',
+                                                                              toolbarColor:
+                                                                              Colors
+                                                                                  .deepOrange,
+                                                                              toolbarWidgetColor:
+                                                                              Colors
+                                                                                  .white,
+                                                                              aspectRatioPresets: [
+                                                                                CropAspectRatioPreset
+                                                                                    .original,
+                                                                                CropAspectRatioPreset
+                                                                                    .square,
+                                                                              ],
+                                                                            ),
+                                                                          ]);
+                                                                      if (croppedImage !=
+                                                                          null) {
+                                                                        pickedFile = File(
+                                                                            croppedImage
+                                                                                .path);
+                                                                        Navigator.pop(context);
+                                                                        //Save image in firestore here
+                                                                        var storage = FirebaseStorage.instance;
+                                                                        var storageRef = storage.ref();
+                                                                        var profilePicRef = storageRef.child(
+                                                                            "images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpg");
+                                                                        await profilePicRef.putFile(pickedFile!);
+                                                                        var actualUrl = await profilePicRef.getDownloadURL();
+                                                                        //adding current pic url in user data
+                                                                        FirebaseFirestore.instance.collection('user').doc(currUser!.uid).update({
+                                                                          'picurl' : actualUrl
+                                                                        });
+                                                                        //creating a new collection in user doc to store all profile pics
+                                                                        //giving same id which is given in user doc
+                                                                        var profileCollection =
+                                                                        FirebaseFirestore.instance.collection('user').doc(currUser!.uid).collection('picsCollection');
+                                                                        //adding all profile pic to document
+                                                                        profileCollection.doc(DateTime.now().millisecondsSinceEpoch.toString()).set({
+                                                                            'url': actualUrl});
+                                                                        setState(() {});
+                                                                        Navigator.pop(context);
+                                                                      }
+                                                                    }
+                                                                  } catch (e) {
+                                                                    print(e.toString());
+                                                                  }
+                                                                },
+                                                                /*----Gallery---*/
+                                                                child: Column(
+                                                                  children: [
+                                                                    Container(
+                                                                        height: 50,
+                                                                        width: 50,
+                                                                        decoration: BoxDecoration(
+                                                                            border: Border.all(
+                                                                                color: Colors
+                                                                                    .black),
+                                                                            borderRadius:
+                                                                            BorderRadius
+                                                                                .circular(
+                                                                                25)),
+                                                                        child: Icon(
+                                                                          Icons.photo,
+                                                                          size: 30,
+                                                                        )),
+                                                                    Text("Gallery")
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          )
+                                                        ],
+                                                      ),
+                                                    );
+                                                  });
+                                            },
+                                            child: Icon(
+                                              Icons.edit,
+                                              size: 20,
+                                            ),
                                           )),
                                     ],
                                   ),
@@ -333,7 +341,8 @@ class _HomePageState extends State<HomePage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       //name
-                                      Text(snapshot.data!.docs[0]['name']),
+                                      Text(snapshot.data!.data()!['name']),
+                                      //email
                                       Text(currUser!.email!),
                                     ],
                                   ),
@@ -502,6 +511,7 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
+                                      //Update Note here
                                       InkWell(
                                           onTap: () {
                                             /*-----------Update Note--------*/
