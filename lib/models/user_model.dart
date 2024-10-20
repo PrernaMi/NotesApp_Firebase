@@ -30,7 +30,7 @@ class UserModel {
       'email' : email,
       'phone' :phone,
       'gender' : gender,
-      'picurl': ""
+      'picurl': picUrl
     };
   }
 }

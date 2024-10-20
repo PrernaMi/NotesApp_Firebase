@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_notes/models/user_model.dart';
 import 'package:firebase_notes/screens/add_update_page.dart';
 import 'package:firebase_notes/screens/all_profile_pics.dart';
 import 'package:firebase_notes/screens/explore_note.dart';
@@ -82,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                                       SizedBox(
                                         height: 50,
                                         width: 50,
-                                        child: snapshot.data!.data()!['picurl'] != null ?
+                                        child: snapshot.data!.data()!['picurl'] != "" ?
                                         SizedBox(
                                           height: 50,
                                           width: 50,
@@ -559,11 +558,13 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         })
-                    : Text(
-                        "No Notes yet!!",
-                        style: TextStyle(
-                            color: Colors.grey, fontWeight: FontWeight.bold),
-                      );
+                    : Center(
+                      child: Text(
+                          "No Notes yet!!",
+                          style: TextStyle(
+                              color: Colors.grey, fontWeight: FontWeight.bold),
+                        ),
+                    );
               }
             }
             return Container();

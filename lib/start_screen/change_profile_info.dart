@@ -12,6 +12,7 @@ class ChangeProfileInfo extends StatefulWidget {
 }
 
 class _ChangeProfileInfoState extends State<ChangeProfileInfo> {
+
   MediaQueryData? mqData;
   TextEditingController emailCon = TextEditingController();
   TextEditingController nameCon = TextEditingController();
