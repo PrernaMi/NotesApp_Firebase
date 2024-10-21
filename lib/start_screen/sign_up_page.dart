@@ -27,7 +27,7 @@ class SignUpPage extends StatelessWidget {
               ),
               Text(
                 "Sign up",
-                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               SizedBox(
                 height: 15,
@@ -89,7 +89,7 @@ class SignUpPage extends StatelessWidget {
                 controller: passCon,
                 obscureText: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.visibility_off),
+                    prefixIcon: Icon(Icons.visibility_off),
                     hintText: "Enter your password",
                     label: Text("Password"),
                     border: OutlineInputBorder(
@@ -117,42 +117,51 @@ class SignUpPage extends StatelessWidget {
               ElevatedButton(
                   onPressed: () async {
                     var auth = FirebaseAuth.instance;
-                    try {
-                      //creating new user account with email and password
-                      var cred = await auth.createUserWithEmailAndPassword(
-                          email: emailCon.text.toString(),
-                          password: passCon.text.toString());
-                      //if user create successfully
-                      if (cred.user != null) {
-                        //then store all info to the firestore with the same user id
-                        //which is creating when user is created in authentication
-                        var fireStore = FirebaseFirestore.instance;
-                        var collection = fireStore.collection("user");
-                        collection.doc(cred.user!.uid).set(UserModel(
-                                name: nameCon.text.toString(),
-                                picUrl: "",
-                                email: emailCon.text.toString(),
-                                phone: phoneCon.text.toString(),
-                                gender: genderCon.text.toString())
-                            .toDoc());
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return LoginPage();
-                        }));
+                    if (emailCon.text.toString() == "" ||
+                        passCon.text.toString() == "" ||
+                        nameCon.text.toString() == "" ||
+                        genderCon.text.toString() == "" ||
+                        phoneCon.text.toString() == "") {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Please fill all required fields...")));
+                    } else {
+                      try {
+                        //creating new user account with email and password
+                        var cred = await auth.createUserWithEmailAndPassword(
+                            email: emailCon.text.toString(),
+                            password: passCon.text.toString());
+                        //if user create successfully
+                        if (cred.user != null) {
+                          //then store all info to the firestore with the same user id
+                          //which is creating when user is created in authentication
+                          var fireStore = FirebaseFirestore.instance;
+                          var collection = fireStore.collection("user");
+                          collection.doc(cred.user!.uid).set(UserModel(
+                                  name: nameCon.text.toString(),
+                                  picUrl: "",
+                                  email: emailCon.text.toString(),
+                                  phone: phoneCon.text.toString(),
+                                  gender: genderCon.text.toString())
+                              .toDoc());
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return LoginPage();
+                          }));
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'weak-password') {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text("The password provided is too weak.")));
+                        } else if (e.code == 'email-already-in-use') {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "The account already exists for that email.")));
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())));
                       }
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'weak-password') {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content:
-                                Text("The password provided is too weak.")));
-                      } else if (e.code == 'email-already-in-use') {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "The account already exists for that email.")));
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   },
                   child: Text("Sign up")),
@@ -165,21 +174,24 @@ class SignUpPage extends StatelessWidget {
               ),
               //sign in with google
               InkWell(
-                onTap: ()async{
-
-                },
+                onTap: () async {},
                 child: Container(
                   height: 50,
-                  width: MediaQuery.of(context).size.width*0.8,
+                  width: MediaQuery.of(context).size.width * 0.8,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey.shade700)
-                  ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade700)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("assets/images/google_logo.png",height: 20,),
-                      Text("continue with google",style: TextStyle(color: Colors.blue),)
+                      Image.asset(
+                        "assets/images/google_logo.png",
+                        height: 20,
+                      ),
+                      Text(
+                        "continue with google",
+                        style: TextStyle(color: Colors.blue),
+                      )
                     ],
                   ),
                 ),
@@ -202,7 +214,8 @@ class SignUpPage extends StatelessWidget {
       }
 
       // Step 2: Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Step 3: Create a new credential
       final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -217,5 +230,4 @@ class SignUpPage extends StatelessWidget {
       return null;
     }
   }
-
 }

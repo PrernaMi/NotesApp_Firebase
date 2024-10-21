@@ -89,27 +89,32 @@ class LoginPage extends StatelessWidget {
               ElevatedButton(
                   onPressed: () async {
                     var auth = FirebaseAuth.instance;
-                    try {
-                      //sign in with existing user
-                      var cred = await auth.signInWithEmailAndPassword(
-                          email: emailCon.text.toString(),
-                          password: passwCont.text.toString());
-                      //if user exist
-                      if (cred.user != null) {
-                        //used for splash screen
-                        prefs = await SharedPreferences.getInstance();
-                        prefs!.setString("uid", cred.user!.uid);
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return HomePage();
-                        }));
+                    if(emailCon.text.toString() == "" || passwCont.text.toString() == ""){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all required fields!!!")));
+                    }else {
+                      try {
+                        //sign in with existing user
+                        var cred = await auth.signInWithEmailAndPassword(
+                            email: emailCon.text.toString(),
+                            password: passwCont.text.toString());
+                        //if user exist
+                        if (cred.user != null) {
+                          //used for splash screen
+                          prefs = await SharedPreferences.getInstance();
+                          prefs!.setString("uid", cred.user!.uid);
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                                return HomePage();
+                              }));
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Error: ${e.code}")));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(e
+                            .toString())));
                       }
-                    } on FirebaseAuthException catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Error: ${e.code}")));
-                    } catch (e) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(e.toString())));
                     }
                   },
                   child: Text("Login"))
