@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_notes/screens/start_screen/sign_up_page.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../models/user_model.dart';
 import '../home_page.dart';
 import 'forgot_pass.dart';
 
@@ -117,7 +119,67 @@ class LoginPage extends StatelessWidget {
                       }
                     }
                   },
-                  child: Text("Login"))
+                  child: Text("Login")),
+              SizedBox(
+                height: 15,
+              ),
+              Text("Or"),
+              SizedBox(
+                height: 15,
+              ),
+              InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                onTap: () async {
+                  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+                  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                  final credential = GoogleAuthProvider.credential(
+                    accessToken: googleAuth?.accessToken,
+                    idToken: googleAuth?.idToken,
+                  );
+                  var cred = await FirebaseAuth.instance.signInWithCredential(credential);
+                  if (cred.user != null) {
+                    prefs = await SharedPreferences.getInstance();
+                    prefs!.setString("uid", cred.user!.uid);
+                    //then store all info to the firestore with the same user id
+                    //which is creating when user is created in authentication
+                    var fireStore = FirebaseFirestore.instance;
+                    var collection = fireStore.collection("user");
+                    collection.doc(cred.user!.uid).set(UserModel(
+                        name: cred.user!.displayName!,
+                        picUrl: "",
+                        email: cred.user!.email!,
+                        phone: "",
+                        gender: "")
+                        .toDoc());
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                          return HomePage();
+                        }));
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade700)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/images/google_logo.png",
+                        height: 20,
+                      ),
+                      Text(
+                        "continue with google",
+                        style: TextStyle(color: Colors.blue),
+                      )
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         ),

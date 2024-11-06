@@ -9,10 +9,62 @@
       "client_info": {
         "mobilesdk_app_id": "1:930861583274:android:ca687b6573d3160c89f9d3",
         "android_client_info": {
+          "package_name": "com.example.firebase_notes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "930861583274-e594dtbqehc2oubaqsj0b76l55gie3s5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.firebase_notes",
+            "certificate_hash": "9e2ba33e0aa6cff909e74fb7776bee5a9cd45c72"
+          }
+        },
+        {
+          "client_id": "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDvUTVoBSyxAbiVvwAa8CIlZKfZwMjBGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "930861583274-5jeg8se9gjeg5ibcos09c4h37d0cj9ni.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.firebaseNotes"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930861583274:android:db2a48459c06e6f089f9d3",
+        "android_client_info": {
           "package_name": "com.lonidev.notes"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "930861583274-c9nrb85rr93d4s1vu8hc7fo36o72rcec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lonidev.notes",
+            "certificate_hash": "9e2ba33e0aa6cff909e74fb7776bee5a9cd45c72"
+          }
+        },
         {
           "client_id": "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
           "client_type": 3

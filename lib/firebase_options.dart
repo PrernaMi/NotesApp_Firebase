@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCDvUTVoBSyxAbiVvwAa8CIlZKfZwMjBGs',
-    appId: '1:930861583274:android:ca687b6573d3160c89f9d3',
+    appId: '1:930861583274:android:db2a48459c06e6f089f9d3',
     messagingSenderId: '930861583274',
     projectId: 'notes-firebase-aa222',
     storageBucket: 'notes-firebase-aa222.appspot.com',
@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '930861583274',
     projectId: 'notes-firebase-aa222',
     storageBucket: 'notes-firebase-aa222.appspot.com',
+    androidClientId: '930861583274-e594dtbqehc2oubaqsj0b76l55gie3s5.apps.googleusercontent.com',
+    iosClientId: '930861583274-5jeg8se9gjeg5ibcos09c4h37d0cj9ni.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseNotes',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '930861583274',
     projectId: 'notes-firebase-aa222',
     storageBucket: 'notes-firebase-aa222.appspot.com',
+    androidClientId: '930861583274-e594dtbqehc2oubaqsj0b76l55gie3s5.apps.googleusercontent.com',
+    iosClientId: '930861583274-5jeg8se9gjeg5ibcos09c4h37d0cj9ni.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseNotes',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'notes-firebase-aa222.appspot.com',
     measurementId: 'G-EGR186BY20',
   );
+
 }

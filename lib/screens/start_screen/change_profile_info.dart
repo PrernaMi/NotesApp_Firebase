@@ -64,7 +64,7 @@ class _ChangeProfileInfoState extends State<ChangeProfileInfo> {
                     SizedBox(
                       height: 15,
                     ),
-                    widget.userData['picurl'] != null ? SizedBox(
+                    widget.userData['picurl'] != null && widget.userData['picurl'] != "" ? SizedBox(
                       height: 70,
                       width: 70,
                       child: ClipRRect(

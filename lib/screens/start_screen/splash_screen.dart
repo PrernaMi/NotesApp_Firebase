@@ -39,21 +39,24 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 50.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              "assets/images/notes_splash_logo.png",
-              height: 100,
-              width: 100,
-              color: Colors.grey,
-            ),
-            Text(
-              "Capture your thoughts, shape your ideas",
-              style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold),
-            )
-          ],
+        padding:  EdgeInsets.symmetric(horizontal: 20.0),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width*0.8,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/images/notes_splash_logo.png",
+                height: 100,
+                width: 100,
+                color: Colors.grey,
+              ),
+              Text(
+                "Capture your thoughts, shape your ideas",
+                style: TextStyle(color: Colors.grey,fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
         ),
       ),
     );

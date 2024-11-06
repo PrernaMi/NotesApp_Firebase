@@ -12,9 +12,18 @@ class SignUpPage extends StatelessWidget {
   TextEditingController passCon = TextEditingController();
   TextEditingController phoneCon = TextEditingController();
   TextEditingController genderCon = TextEditingController();
+  List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ];
 
   @override
   Widget build(BuildContext context) {
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: scopes,
+      clientId:
+          "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
+    );
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(10.0),
@@ -165,37 +174,6 @@ class SignUpPage extends StatelessWidget {
                     }
                   },
                   child: Text("Sign up")),
-              SizedBox(
-                height: 15,
-              ),
-              Text("Or"),
-              SizedBox(
-                height: 15,
-              ),
-              //sign in with google
-              InkWell(
-                onTap: () async {},
-                child: Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade700)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        "assets/images/google_logo.png",
-                        height: 20,
-                      ),
-                      Text(
-                        "continue with google",
-                        style: TextStyle(color: Colors.blue),
-                      )
-                    ],
-                  ),
-                ),
-              )
             ],
           ),
         ),
