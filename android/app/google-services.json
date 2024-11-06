@@ -9,10 +9,15 @@
       "client_info": {
         "mobilesdk_app_id": "1:930861583274:android:ca687b6573d3160c89f9d3",
         "android_client_info": {
-          "package_name": "com.example.firebase_notes"
+          "package_name": "com.lonidev.notes"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCDvUTVoBSyxAbiVvwAa8CIlZKfZwMjBGs"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930861583274-clgapgrrt2ltjo4p7m8dqv3mddvht4ld.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "930861583274-5jeg8se9gjeg5ibcos09c4h37d0cj9ni.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.firebaseNotes"
+              }
+            }
+          ]
         }
       }
     }

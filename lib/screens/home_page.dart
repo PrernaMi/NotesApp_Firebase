@@ -5,9 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_notes/screens/add_update_page.dart';
 import 'package:firebase_notes/screens/all_profile_pics.dart';
 import 'package:firebase_notes/screens/explore_note.dart';
-import 'package:firebase_notes/start_screen/change_profile_info.dart';
-import 'package:firebase_notes/start_screen/forgot_pass.dart';
-import 'package:firebase_notes/start_screen/login_page.dart';
+import 'package:firebase_notes/screens/start_screen/change_profile_info.dart';
+import 'package:firebase_notes/screens/start_screen/forgot_pass.dart';
+import 'package:firebase_notes/screens/start_screen/login_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -188,6 +188,7 @@ class _HomePageState extends State<HomePage> {
                                                                       var storageRef = storage.ref();
                                                                       var profilePicRef = storageRef.child(
                                                                           'images/profile_pic/IMG_${DateTime.now().millisecondsSinceEpoch}.jpeg');
+                                                                      //stored file in firestore
                                                                       await profilePicRef.putFile(pickedFile!);
                                                                       var actualUrl = profilePicRef.getDownloadURL();
                                                                       //adding current pic url in user data
